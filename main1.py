@@ -87,10 +87,12 @@ if c is True:
 # THIS IS JUST FOR GRAYSCALE, FOR NOWW!!!
 euclid = []
 chiSquare = []
-for histQuery in histGrayQ:
-    for hist in histGray:
-        dist = euclid_dist(histQuery, hist)
+for i in range(len(histGrayQ)):
+    for j in range(len(histGray)):
+        print(i)
+        print(j)
+        dist = euclid_dist(histGrayQ[i], histGray[j])
         euclid.append(dist)
-        dist = chiSquare_dist(histQuery,hist)
+        dist = chiSquare_dist(histGrayQ[i], histGray[j])
         chiSquare.append(dist)
 
