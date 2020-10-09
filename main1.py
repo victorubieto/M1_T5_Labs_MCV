@@ -1,18 +1,21 @@
 import cv2
 import numpy as np
+import math
 from matplotlib import pyplot as plt
 import os
+
 
 # Generic functions
 def load_images(folder):
     images = []
     for filename in os.listdir(folder):
         if filename.split('.')[1] == 'jpg':
-            img=cv2.imread(os.path.join(folder,filename))
+            img = cv2.imread(os.path.join(folder, filename))
 
             if img is not None:
                 images.append(img)
     return images
+
 
 def calculate_gray_hist(listIm):
     histGray = []
@@ -30,14 +33,15 @@ def calculate_gray_hist(listIm):
         # plt.xlim([0, 256])
     return histGray
 
+
 def calculate_color_hist(listIm):
     histBlue = []
     histGreen = []
     histRed = []
     for img in museumIm:
-        color = ('b','g','r')
-        for i,col in enumerate(color):
-            histr = cv2.calcHist([img],[i],None,[256],[0,256])
+        color = ('b', 'g', 'r')
+        for i, col in enumerate(color):
+            histr = cv2.calcHist([img], [i], None, [256], [0, 256])
             if col == 'b':
                 histBlue.append(histr)
             elif col == 'g':
@@ -46,7 +50,20 @@ def calculate_color_hist(listIm):
                 histRed.append(histr)
 
     return histBlue, histGreen, histRed
-#-----------------------------------------------------------------------------------------------------------------------
+
+
+# Euclidean distance
+def euclid_dist(vec1, vec2):
+    d = np.sqrt(np.sum([(a - b) ** 2 for (a,b) in zip(vec1,vec2)]))
+    return d
+
+
+#Chi square distance
+def chiSquare_dist(vec1,vec2):
+    d = np.sum([((a - b) ** 2) / (a + b) for (a, b) in zip(vec1, vec2)])
+    return d
+
+# -----------------------------------------------------------------------------------------------------------------------
 
 # 1. Calculate histograms from museum images
 path = 'BBDD'
@@ -68,14 +85,12 @@ if c is True:
 
 # 3. Find the most similar histogram in the museum
 # THIS IS JUST FOR GRAYSCALE, FOR NOWW!!!
-euclidDist = []
+euclid = []
+chiSquare = []
 for histQuery in histGrayQ:
     for hist in histGray:
-        dist = np.linalg.norm(histQuery - hist)
-        euclidDist.append(dist)
-
-
-
-
-
+        dist = euclid_dist(histQuery, hist)
+        euclid.append(dist)
+        dist = chiSquare_dist(histQuery,hist)
+        chiSquare.append(dist)
 
