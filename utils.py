@@ -1,6 +1,6 @@
 import cv2
 import os
-
+import numpy as np
 
 # Generic functions
 def load_images(folder):
@@ -17,8 +17,21 @@ def load_images(folder):
                 else:
                     temp = filename
                 temp1 = temp.split('.')[0]
-                id = temp1.split('0')[-1]
+                for i in range(len(temp1)):
+                    id = None
+                    if temp1[i] != '0':
+                        id = temp1[i:]
+                        break
+                if id is None:
+                    id = '0'
                 ids.append(id)
 
     return images, ids
+
+
+def sort_ids(metric,idList):
+    id = np.argsort(metric)
+    sortMetric = np.array(metric)[id]
+    sortedIds = np.array(idList)[id]
+    return list(map(int, sortedIds))
 

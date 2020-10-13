@@ -1,5 +1,7 @@
 import numpy as np
 import math
+import cv2
+
 
 
 # Euclidean distance
@@ -10,8 +12,9 @@ def euclid_dist(vec1, vec2):
 
 #Chi square distance
 def chiSquare_dist(vec1,vec2):
-    d = np.sum([((a - b) ** 2) / (a + b) for (a, b) in zip(vec1, vec2)])
+    d = cv2.compareHist(vec1, vec2, cv2.HISTCMP_CHISQR)
     return d
+
 
 # L1 distance
 def L1_dist(vec1, vec2):
