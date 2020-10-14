@@ -14,7 +14,7 @@ metric = ['Euclid','ChiSquare','L1','Intersection','Hellinger']
 path = 'BBDD'
 
 gtquery_list = []
-gt_query_file = 'qsd1_w1/gt_corresps.pkl'
+gt_query_file = 'qsd2_w1/gt_corresps.pkl'
 with open(gt_query_file, 'rb') as gtfd:
     gtquery_list = pickle.load(gtfd)
 
@@ -25,7 +25,7 @@ histMus = calculate_rgbConcat_hist(museumIm)
 # plt.xlim([0, 256])
 
 # 2. For each query, calculate histogram
-path = 'qsd1_w1'
+path = 'qsd2_w1'
 q1Im, q1Ids = load_images(path)
 q1Im_cropped = crop_imgarray(q1Im)
 histQ = calculate_rgbConcat_hist(q1Im_cropped)
