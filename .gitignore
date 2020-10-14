@@ -1,4 +1,13 @@
 
+# ignore Pycharm files
+.idea/
+
 # ignore DB
 smallQuery/
 smallMuseum/
+BBDD/
+qsd1_w1/
+qsd2_w1/
+
+# ignore pycache
+__pycache__/
