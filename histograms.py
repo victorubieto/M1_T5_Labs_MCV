@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import os
 
 
 def calculate_gray_hist(listIm):
@@ -20,48 +21,90 @@ def calculate_gray_hist(listIm):
     return histGray
 
 
-def calculate_rgbConcat_hist(listIm):
-    histRGBConcat = []
-    for img in listIm:
-        color = ('b', 'g', 'r')
-        for i, col in enumerate(color):
-            hist = cv2.calcHist([img], [i], None, [256], [0, 256])
-            hist = cv2.normalize(hist,hist)
-            if col == 'b':
-                histBlue = hist
-            elif col == 'g':
-                histGreen = hist
-            else:
-                histRed = hist
-
-        concHist = np.concatenate((histBlue, histGreen, histRed),axis=None)
-        histRGBConcat.append(concHist)
-
-    return histRGBConcat
-
-
-
-def calculate_hsv_hist(listIm):
-    histHSV = []
-    bins = 8
-    for img in listIm:
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        hist = cv2.calcHist([hsv], [0, 1, 2], None, [2*bins, bins, int(bins/2)], [0, 180, 0, 256, 0, 256])
-        hist = cv2.normalize(hist, hist)
-        histHSV.append(hist.flatten())
-
-    return histHSV
+def labHist(path,nBins):
+    featVecs = []
+    ids = []
+    iIm = 0
+    for file in os.listdir(path):
+        if file.endswith('.jpg'):
+            iIm += 1
+            print(str(iIm))
+            im = cv2.imread(os.path.join(path, file))
+            lab = cv2.cvtColor(im, cv2.COLOR_BGR2LAB)
+            l = np.histogram(lab[:, :, 0], nBins, [0, 180])[0]
+            a = np.histogram(lab[:, :, 1], nBins, [0, 255])[0]
+            b = np.histogram(lab[:, :, 2], nBins, [0, 255])[0]
+            featVecs.append(np.concatenate([l,a, b], axis=0))
+            if '_' in file:
+                file = file.split('_')[1]
+            name = file.split('.')[0]
+            ids.append(int(name))
+    ids, featVecs = zip(*sorted(zip(ids, featVecs)))
+    return featVecs, ids
 
 
-def calculate_rgb_hist(listIm):
-    histRGB = []
-    bins = 8
-    for img in listIm:
-        hist = cv2.calcHist([img], [0, 1, 2], None, [bins,bins,bins], [0, 256, 0, 256, 0, 256])
-        hist = cv2.normalize(hist, hist)
-        hist.flatten()
-        histRGB.append(hist)
+def rgbHist(path,nBins):
+    featVecs = []
+    ids = []
+    iIm = 0
+    for file in os.listdir(path):
+        if file.endswith('.jpg'):
+            iIm += 1
+            print(str(iIm))
+            im = cv2.imread(os.path.join(path, file))
+            b = np.histogram(im[:, :, 0], nBins, [0, 255])[0]
+            g = np.histogram(im[:, :, 1], nBins, [0, 255])[0]
+            r = np.histogram(im[:, :, 2], nBins, [0, 255])[0]
+            featVecs.append(np.concatenate([b, g, r], axis=0))
+            if '_' in file:
+                file = file.split('_')[1]
+            name = file.split('.')[0]
+            ids.append(int(name))
+    ids, featVecs = zip(*sorted(zip(ids, featVecs)))
+    return featVecs, ids
 
-    return histRGB
+
+def ycrcbHist(path,nBins):
+    featVecs = []
+    ids = []
+    iIm = 0
+    for file in os.listdir(path):
+        if file.endswith('.jpg'):
+            iIm += 1
+            print(str(iIm))
+            im = cv2.imread(os.path.join(path, file))
+            ycrcb = cv2.cvtColor(im, cv2.COLOR_BGR2YCrCb)
+            y = np.histogram(ycrcb[:, :, 0], nBins, [0, 180])[0]
+            cr = np.histogram(ycrcb[:, :, 1], nBins, [0, 255])[0]
+            cb = np.histogram(ycrcb[:, :, 2], nBins, [0, 255])[0]
+            featVecs.append(np.concatenate([y, cr, cb], axis=0))
+            if '_' in file:
+                file = file.split('_')[1]
+            name = file.split('.')[0]
+            ids.append(int(name))
+    ids, featVecs = zip(*sorted(zip(ids, featVecs)))
+    return featVecs, ids
+
+
+def hsvHist(path,nBins):
+    featVecs = []
+    ids = []
+    iIm = 0
+    for file in os.listdir(path):
+        if file.endswith('.jpg'):
+            iIm += 1
+            print(str(iIm))
+            im = cv2.imread(os.path.join(path, file))
+            im_hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+            h = np.histogram(im_hsv[:, :, 0], nBins, [0, 180])[0]
+            s = np.histogram(im_hsv[:, :, 1], nBins, [0, 255])[0]
+            v = np.histogram(im_hsv[:, :, 2], nBins, [0, 255])[0]
+            featVecs.append(np.concatenate([h, s, v], axis=0))
+            if '_' in file:
+                file = file.split('_')[1]
+            name = file.split('.')[0]
+            ids.append(int(name))
+    ids, featVecs = zip(*sorted(zip(ids,featVecs)))
+    return featVecs,ids
 
 

@@ -6,7 +6,7 @@ import cv2
 
 # Euclidean distance
 def euclid_dist(vec1, vec2):
-    d = np.sqrt(np.sum([(a - b) ** 2 for (a,b) in zip(vec1,vec2)]))
+    d = np.linalg.norm(vec1-vec2)
     return d
 
 
@@ -16,19 +16,20 @@ def chiSquare_dist(vec1,vec2):
     return d
 
 
-# L1 distance
-def L1_dist(vec1, vec2):
-    d = np.sum([abs(a + b) for (a, b) in zip(vec1, vec2)])
+# Correlation
+def corrDist(vec1, vec2):
+    d = - cv2.compareHist(vec1, vec2, cv2.HISTCMP_CORREL)
     return d
 
 
 # Histogram intersection (similarity)
 def Hist_intersection(vec1, vec2):
-    i = np.sum([min(a, b) for (a, b) in zip(vec1, vec2)])
-    return i
+    similarity = cv2.compareHist(vec1, vec2, cv2.HISTCMP_INTERSECT)
+    d = -similarity
+    return d
 
 
 # Hellinger kernel (similarity)
 def Hellinger_kernel(vec1, vec2):
-    k = np.sum([math.sqrt(a * b) for (a, b) in zip(vec1, vec2)])
-    return k
+    d = cv2.compareHist(vec1, vec2, cv2.HISTCMP_HELLINGER)
+    return d
