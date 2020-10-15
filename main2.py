@@ -27,8 +27,7 @@ histMus = calculate_rgbConcat_hist(museumIm)
 # 2. For each query, calculate histogram
 path = 'qsd2_w1'
 q1Im, q1Ids = load_images(path)
-q1Im_cropped = crop_imgarray(q1Im)
-histQ = calculate_rgbConcat_hist(q1Im_cropped)
+histQ = calculate_rgbConcat_hist(q1Im)
 # plt.plot(histQ[0])
 # plt.xlim([0, 256])
 
@@ -74,4 +73,18 @@ for i in range(len(metric)):
     print(metric[i]+' '+str(mapkScore))
 
 
+# 5. Create a binary mask to evaluate the method & compute the descriptors on the foreground pixels.
 
+# Load gt masks
+q1Gt_mask, q1IdsMs = load_masks(path)
+# Compute binary masks
+masks = get_mask_array(q1Im)
+
+# Compute the descriptors on the foreground pixels
+q1Im_cropped = crop_imgarray(q1Im)
+
+
+# 6. Evaluation
+
+# Calculate Precision, Recall and F1 metrics on the predicted masks
+PRs, RCs, F1s = mask_evaluation(q1Gt_mask, masks)
