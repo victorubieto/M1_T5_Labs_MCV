@@ -31,7 +31,7 @@ def labHist(path,nBins):
             print(str(iIm))
             im = cv2.imread(os.path.join(path, file))
             lab = cv2.cvtColor(im, cv2.COLOR_BGR2LAB)
-            l = np.histogram(lab[:, :, 0], nBins, [0, 180])[0]
+            l = np.histogram(lab[:, :, 0], nBins, [0, 255])[0]
             a = np.histogram(lab[:, :, 1], nBins, [0, 255])[0]
             b = np.histogram(lab[:, :, 2], nBins, [0, 255])[0]
             featVecs.append(np.concatenate([l,a, b], axis=0))
@@ -40,6 +40,20 @@ def labHist(path,nBins):
             name = file.split('.')[0]
             ids.append(int(name))
     ids, featVecs = zip(*sorted(zip(ids, featVecs)))
+    return featVecs, ids
+
+def labHist2(listIm,nBins,id):
+    featVecs = []
+    iIm = 0
+    for i in range(len(listIm)):
+        iIm += 1
+        print(str(iIm))
+        lab = cv2.cvtColor(listIm[i], cv2.COLOR_BGR2LAB)
+        l = np.histogram(lab[:, :, 0], nBins, [0, 255])[0]
+        a = np.histogram(lab[:, :, 1], nBins, [0, 255])[0]
+        b = np.histogram(lab[:, :, 2], nBins, [0, 255])[0]
+        featVecs.append(np.concatenate([l, a, b], axis=0))
+    ids, featVecs = zip(*sorted(zip(id, featVecs)))
     return featVecs, ids
 
 
