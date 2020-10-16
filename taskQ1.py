@@ -9,14 +9,11 @@ from histograms import *
 
 
 metricType = 'hell'
-pathQ = 'qsd1_w1'
+pathQ = 'qst1_w1'
 pathM = 'BBDD'
 
-histMus,idsMus = labHist(pathM,64)
-histQ,idsQ = labHist(pathQ,64)
-
-with open(os.path.join(pathQ,'gt_corresps.pkl'), 'rb') as f:
-    gtquery_list = pickle.load(f)
+histMus,idsMus = labrgbHist(pathM,64)
+histQ,idsQ = labrgbHist(pathQ,64)
 
 finalIds = []
 for i in range(len(histQ)):
@@ -41,10 +38,23 @@ for i in range(len(histQ)):
     allDist, idsSorted = zip(*sorted(zip(allDist, idsMus)))
     finalIds.append(list(idsSorted))
 
-# 4. Return top K images
-k = 5
-mapkScore = metrics.mapk(gtquery_list,finalIds ,k)
-print(metricType+' '+str(mapkScore))
+# Return top K images
+if os.path.exists(os.path.join(pathQ,'gt_corresps.pkl')):
+    with open(os.path.join(pathQ,'gt_corresps.pkl'), 'rb') as f:
+        gtquery_list = pickle.load(f)
+    k = 5
+    mapkScore = metrics.mapk(gtquery_list,finalIds ,k)
+    print(metricType+' '+str(mapkScore))
+else:
+
+    result = np.zeros((np.shape(finalIds)[0],10))
+    for i in range(np.shape(finalIds)[0]):
+        for j in range(10):
+            result[i][j] = finalIds[i][j]
+    filename = 'result'
+    outfile = open(filename, 'wb')
+    pickle.dump(result, outfile)
+    outfile.close()
 
 
 

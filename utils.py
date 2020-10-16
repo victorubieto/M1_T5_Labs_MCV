@@ -89,7 +89,11 @@ def load_masks(folder):
                     temp = filename
                 temp1 = temp.split('.')[0]
                 ids.append(int(temp1))
-    ordIds, ordMasks = zip(*sorted(zip(ids, images)))
+    if not ids:
+        ordMasks = None
+        ordIds = None
+    else:
+        ordIds, ordMasks = zip(*sorted(zip(ids, images)))
 
     return ordMasks, ordIds
 

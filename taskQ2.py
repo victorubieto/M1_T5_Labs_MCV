@@ -11,10 +11,10 @@ from masks import *
 
 
 
-# 5. Create a binary mask to evaluate the method & compute the descriptors on the foreground pixels.
+# Create a binary mask to evaluate the method & compute the descriptors on the foreground pixels.
 
 # Load gt masks
-pathQ2 = 'qsd2_w1'
+pathQ2 = 'qst2_w1'
 q2Gt_mask, q2IdsMs = load_masks(pathQ2)
 # Compute binary masks
 q2Im = []
@@ -34,27 +34,24 @@ masks = get_mask_array(q2ImOrd)
 q2Im_cropped = crop_imgarray(q2ImOrd)
 
 
-# 6. Evaluation
+#Evaluation
 
 # Calculate Precision, Recall and F1 metrics on the predicted masks
-PRs, RCs, F1s = mask_evaluation(q2Gt_mask, masks)
-print('precision:',np.mean(PRs))
-print('recall:',np.mean(RCs))
-print('f1:',np.mean(F1s))
+if q2Gt_mask:
+    PRs, RCs, F1s = mask_evaluation(q2Gt_mask, masks)
+    print('precision:',np.mean(PRs))
+    print('recall:',np.mean(RCs))
+    print('f1:',np.mean(F1s))
 
 #-------------------------------Calculate correspondences with cropped images-------------------------------------------
 metricType = 'hell'
-pathQ = 'qsd2_w1'
+pathQ = pathQ2
 pathM = 'BBDD'
 
-# for img in q2Im_cropped:
-#     plt.figure()
-#     plt.imshow(img)
-histMus,idsMus = labHist(pathM,64)
-histQ,idsQ = labHist2(q2Im_cropped,64,idsq2Ord)
+#Calculate histograms
+histMus,idsMus = labrgbHist(pathM,64)
+histQ,idsQ = labrgbHist2(q2Im_cropped,64,idsq2Ord)
 
-with open(os.path.join(pathQ,'gt_corresps.pkl'), 'rb') as f:
-    gtquery_list = pickle.load(f)
 
 finalIds = []
 for i in range(len(histQ)):
@@ -79,9 +76,22 @@ for i in range(len(histQ)):
     allDist, idsSorted = zip(*sorted(zip(allDist, idsMus)))
     finalIds.append(list(idsSorted))
 
+
 # 4. Return top K images
-k = 5
-mapkScore = metrics.mapk(gtquery_list,finalIds ,k)
-print(metricType+' '+str(mapkScore))
+if os.path.exists(os.path.join(pathQ,'gt_corresps.pkl')):
+    with open(os.path.join(pathQ,'gt_corresps.pkl'), 'rb') as f:
+        gtquery_list = pickle.load(f)
+    k = 1
+    mapkScore = metrics.mapk(gtquery_list,finalIds ,k)
+    print(metricType+' '+str(mapkScore))
+else:
+    result = np.zeros((np.shape(finalIds)[0], 10))
+    for i in range(np.shape(finalIds)[0]):
+        for j in range(10):
+            result[i][j] = finalIds[i][j]
+    filename = 'result'
+    outfile = open(filename, 'wb')
+    pickle.dump(result, outfile)
+    outfile.close()
 
 
